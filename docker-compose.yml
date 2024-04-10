@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  fastapi:
+    build: .
+    restart: always
+    volumes:
+      - ./src:/app/src
+    ports:
+      - 8000:8000
+    environment:
+      - VLLM_ENDPOINT=http://vllm:8000/v1
+      - VLLM_API_KEY=<VLLM_API_KEY>
+      - MODEL_NAME=<MODEL_NAME>
+  vllm:
+    image: vllm/vllm-openai:latest
+    restart: always
+    ipc: host
+    command: --model openthaigpt/openthaigpt-1.0.0-7b-chat --served-model-name openthaigpt-1.0.0-7b-chat --host 0.0.0.0 --allow-credential --trust-remote-code --enforce-eager --disable-custom-all-reduce --tensor-parallel-size 1 --chat-template /chat_templates/template_llama2.jinja
+    volumes:
+      - ./hf_cache:/root/.cache/huggingface
+      - ./chat_templates:/chat_templates
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=<HUGGING_FACE_HUB_TOKEN>
+      - VLLM_API_KEY=<VLLM_API_KEY>
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
