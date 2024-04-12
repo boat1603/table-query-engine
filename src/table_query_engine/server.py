@@ -1,16 +1,13 @@
-import os
 import argparse
 import uvicorn
-import pandas as pd
 
 from fastapi import (
     FastAPI,
 )
 from fastapi.middleware.cors import CORSMiddleware
 from .models import QueryInput, QueryResponse
+from .query_engine import initialize_query_engine
 
-from llama_index.llms.openai_like import OpenAILike
-from llama_index.core.query_engine import PandasQueryEngine
 
 app = FastAPI()
 app.add_middleware(
@@ -21,18 +18,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-llm = OpenAILike(
-    model=os.environ["MODEL_NAME"],
-    api_key=os.environ["VLLM_API_KEY"],
-    api_base=os.environ["VLLM_ENDPOINT"],
-)
-df = pd.DataFrame(
-    {
-        "city": ["Toronto", "Tokyo", "Berlin"],
-        "population": [2930000, 13960000, 3645000],
-    }
-)
-query_engine = PandasQueryEngine(df=df, llm=llm, verbose=True)
+query_engine = initialize_query_engine()
 
 
 @app.get("/ping")
@@ -42,8 +28,8 @@ def ping():
 
 @app.post("/query")
 async def query(data: QueryInput) -> QueryResponse:
-    response = query_engine.query(data.query)
-    return QueryResponse(response=response.response)
+    response = query_engine(data.query)
+    return response
 
 
 if __name__ == "__main__":
