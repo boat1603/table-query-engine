@@ -32,10 +32,19 @@ if __name__ == "__main__":
     with open(args.save_dir, "w") as f:
         pass
 
-    for query_str in query_json:
+    for idx, query_str in enumerate(query_json):
         t1 = time.time()
         response = query_engine(query_str).response
         elapsed_time = time.time() - t1
         with open(args.save_dir, "a") as f:
-            json.dump({"response": response, "elapsed_time": elapsed_time}, f)
+            json.dump(
+                {
+                    "idx": idx,
+                    "query_str": query_str,
+                    "response": response,
+                    "elapsed_time": elapsed_time,
+                },
+                f,
+                ensure_ascii=False,
+            )
             f.write("\n")
