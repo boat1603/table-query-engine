@@ -22,4 +22,5 @@ dependencies = [
     "python-multipart",
     "llama-index",
     "llama-index-llms-openai-like",
+    "llama-index-experimental",
 ]

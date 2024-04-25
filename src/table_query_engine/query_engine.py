@@ -3,7 +3,7 @@ import pandas as pd
 from .models import QueryResponse
 
 from llama_index.llms.openai_like import OpenAILike
-from llama_index.core.query_engine import PandasQueryEngine
+from llama_index.experimental.query_engine import PandasQueryEngine
 
 
 class QueryEngine:
