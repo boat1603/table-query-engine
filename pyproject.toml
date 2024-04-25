@@ -20,7 +20,7 @@ dependencies = [
     "openai",
     "requests",
     "python-multipart",
-    "llama-index",
+    "llama-index>=0.10.29",
     "llama-index-llms-openai-like",
     "llama-index-experimental",
 ]
